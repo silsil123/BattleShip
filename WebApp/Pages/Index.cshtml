@@ -1,0 +1,50 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to BattleShip!</h1>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Date created
+        </th>
+        <th>
+            Game name
+        </th>
+        <th>
+            First player
+        </th>
+        <th>
+            Second player
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model.Game!.OrderBy(x=> x.Description)) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GameName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstPlayer.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SecondPlayer.Name)
+            </td>
+            <td>
+                <a asp-page="./GamePlay/Index" asp-route-id="@item.GameId" asp-route-m="1">Load</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,96 @@
+﻿@page
+@model WebApp.Pages.ShipPlacement.Index
+
+@functions
+{
+    string GetCellContent(int x, int y)
+    {
+        var cell = "&nbsp";
+        foreach (var ship in Model.Ships)
+        {
+            if (ship.IsPlaced || ship == Model.Ships[Model.CurShipNo])
+            {
+                ship.SetShipCoordinatesFromJson();
+                foreach (var coord in ship.Coordinates)
+                {
+                    if (coord[0] == x && coord[1] == y)
+                    {
+                        cell = "S";
+                        return cell;
+                    }
+                }
+            }
+        }
+        return cell;
+    }
+
+}
+<h2>Currently placing: @Model.Name</h2>
+<div class="row">
+    <div class="col-1"></div>
+    <div style="margin: 0 auto">
+        <table class="table table-sm table-bordered">
+            @for (int y = 0; y < @Model.Game.FirstPlayer.Board.Height; y++)
+            {
+                <tr>
+                    @for (int x = 0; x < @Model.Game.FirstPlayer.Board.Width; x++)
+                    {
+                        <td>
+                            <div style="width: 1.5rem;height: 1.5rem;text-align: center">
+                                @Html.Raw(GetCellContent(x, y))
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    <div class="col-1"></div>
+</div>
+@if (!Model.AllShipsPlaced)
+{
+    <div class="navigation-board">
+        <div style="margin: 0 auto">
+            <table class="text-center" style="border-spacing: 0;">
+                <tr>
+                    <td></td>
+                    <td><a asp-route-p="@Model.PlayerTurn" asp-route-id="@Model.Game.GameId" asp-route-c="@Model.CurShipNo" asp-route-dir="up">⬆</a></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><a asp-route-p="@Model.PlayerTurn" asp-route-id="@Model.Game.GameId" asp-route-c="@Model.CurShipNo" asp-route-dir="left">⬅</a></td>
+                    <td><a asp-route-p="@Model.PlayerTurn" asp-route-id="@Model.Game.GameId" asp-route-c="@Model.CurShipNo" asp-route-dir="rotate">🔄</a></td>
+                    <td><a asp-route-p="@Model.PlayerTurn" asp-route-id="@Model.Game.GameId" asp-route-c="@Model.CurShipNo" asp-route-dir="right">➡</a></td>
+                    <td>&nbsp;</td>
+                    <td><a asp-route-p="@Model.PlayerTurn" asp-route-id="@Model.Game.GameId" asp-route-c="@Model.CurShipNo" asp-route-dir="enter">☑</a></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><a asp-route-p="@Model.PlayerTurn" asp-route-id="@Model.Game.GameId" asp-route-c="@Model.CurShipNo" asp-route-dir="down">⬇</a></td>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+}
+else if (Model.PlayerTurn == 0)
+{
+    <div class="row">
+        <div class="col-4"></div>
+        <div style="margin: 0 auto">
+            <button onclick="window.location.href = '?id=@Model.Game.GameId&p=1&c=0'" type="submit" class="btn btn-primary btn-lg">Next Player!</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-4"></div>
+        <div style="margin: 0 auto">
+            <button onclick="window.location.href = '../GamePlay?id=@Model.Game.GameId&m=1'" type="submit" class="btn btn-primary btn-lg">Start Game!</button>
+        </div>
+        <div class="col-4"></div>
+    </div>
+}
+

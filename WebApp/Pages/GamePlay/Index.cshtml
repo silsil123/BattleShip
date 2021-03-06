@@ -1,0 +1,191 @@
+﻿@page
+@using Domain.Enums
+@using Domain
+@model WebApp.Pages.GamePlay.Index
+
+@functions
+{
+    string GetCellContent(int x, int y, bool move)
+    {
+        var cell = CellState.Empty;
+        if (move)
+        {
+            cell = Model.Game.CurrentPlayerFirst ? 
+                Model.BsGame.GetPlayerMoveBoard(true)[x][y] : 
+                Model.BsGame.GetPlayerMoveBoard(false)[x][y];
+        }
+        else
+        {
+            cell = Model.Game.CurrentPlayerFirst ? 
+                Model.BsGame.GetPlayerShipBoard(true)[x][y] : 
+                Model.BsGame.GetPlayerShipBoard(false)[x][y];
+        }
+        return CellString(cell);
+    }
+
+    int GetShipBoardActive()
+    {
+        return Model.ShipBoardActive == 0 ? 1 : 0;
+    }
+
+    string GetWinContent(int x, int y, bool winner)
+    {
+        var cell = CellState.Empty;
+        if (winner)
+        {
+            cell = Model.CurrentPlayer == Model.Game.FirstPlayer
+                ? Model.BsGame.GetPlayerShipBoard(true)[x][y]
+                    : Model.BsGame.GetPlayerShipBoard(false)[x][y];
+        }
+        else
+        {
+            cell = Model.CurrentPlayer == Model.Game.FirstPlayer
+                ? Model.BsGame.GetPlayerShipBoard(false)[x][y]
+                : Model.BsGame.GetPlayerShipBoard(true)[x][y];
+        }
+        return CellString(cell);
+    }
+
+    string CellString(CellState cell)
+    {
+        switch (cell)
+        {
+            case CellState.Empty: return "&nbsp";
+            case CellState.Miss: return "*";
+            case CellState.Hit: return "X";
+            case CellState.Ship: return "S";
+            case CellState.Sunk: return "#";
+        }
+        return "&nbsp";
+    }
+
+    Player GetOpponent()
+    {
+        return Model.CurrentPlayer == Model.Game.FirstPlayer
+            ? Model.Game.SecondPlayer : Model.Game.FirstPlayer;
+    }
+}
+@if (!Model.GameWon)
+{
+    @if (Model.Undo == 0)
+    {
+        <h2>Current move: @Model.CurrentPlayer.Name</h2>
+        <div class="row">
+            <div class="col-3">
+                <button onclick="window.location.href = '?id=@Model.Game.GameId&t=1&m=1'"
+                        type="button" class="btn btn-dark btn-block">End turn</button>
+                <button onclick="window.location.href = '?id=@Model.Game.GameId&s=@GetShipBoardActive()&m=@Model.MoveDone'"
+                        type="button" class="btn btn-dark btn-block">Show ship board</button>
+                <button onclick="window.location.href = '?id=@Model.Game.GameId&u=1&s=@Model.ShipBoardActive'"
+                        type="button" class="btn btn-dark btn-block">Undo a move</button>
+                <button onclick="window.location.href = 'Index'"
+                        type="button" class="btn btn-danger btn-block">Save and exit</button>
+            </div>
+            <div class="col-1" style="margin: 0 auto;overflow: initial">
+                <table class="table table-bordered table-sm">
+                    @for (int y = 0; y < Model.Height; y++)
+                    {
+                        <tr>
+                            @for (int x = 0; x < Model.Width; x++)
+                            {
+                                if (Model.MoveDone == 1)
+                                {
+                                    <td onclick="window.location.href = '?posX=@x&posY=@y&id=@Model.Game.GameId&s=@Model.ShipBoardActive&m=@Model.MoveDone'"
+                                        style="cursor: pointer">
+                                        <div style="width: 1.5rem;height: 1.5rem;text-align: center">
+                                            @Html.Raw(GetCellContent(x, y, true))
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div style="width: 1.5rem;height: 1.5rem;text-align: center">
+                                            @Html.Raw(GetCellContent(x, y, true))
+                                        </div>
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="col-7" style="pointer-events: none"></div>
+        </div>
+    @if (Model.ShipBoardActive == 1)
+    {
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-1" style="margin: 0 auto">
+                <table class="table table-bordered table-sm">
+                    @for (int y = 0; y < Model.Height; y++)
+                    {
+                        <tr>
+                            @for (int x = 0; x < Model.Width; x++)
+                            {
+                                <td>
+                                    <div style="width: 1.5rem;height: 1.5rem;text-align: center">
+                                        @Html.Raw(GetCellContent(x, y, false))
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <div class="col-7"></div>
+        </div>
+    }
+    }
+}
+else
+{
+    <h1>Winner is @Model.CurrentPlayer.Name</h1>
+    <div class="row">
+        <div class="col-3">
+            <button onclick="window.location.href = 'Index'"
+                    type="button" class="btn btn-danger btn-block">Exit the game</button>
+        </div>
+        <div class="col-2" style="margin: 0 auto;overflow: initial">
+            <h3>@Model.CurrentPlayer.Name's board</h3>
+            <table class="table table-bordered table-sm">
+                @for (int y = 0; y < Model.Height; y++)
+                {
+                    <tr>
+                        @for (int x = 0; x < Model.Width; x++)
+                        {
+                            <td>
+                                <div style="width: 1.5rem;height: 1.5rem;text-align: center">
+                                    @Html.Raw(GetWinContent(x, y, true))
+                                </div>
+                            </td>
+                        }
+                    </tr>
+                }
+            </table>
+        </div>
+        <div class="col-7" style="pointer-events: none"></div>
+    </div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-2" style="margin: 0 auto">
+            <h3>@GetOpponent().Name's board</h3>
+            <table class="table table-bordered table-sm">
+                @for (int y = 0; y < Model.Height; y++)
+                    {
+                        <tr>
+                            @for (int x = 0; x < Model.Width; x++)
+                            {
+                                <td>
+                                    <div style="width: 1.5rem;height: 1.5rem;text-align: center">
+                                        @Html.Raw(GetWinContent(x, y, false))
+                                    </div>
+                                </td>
+                            }
+                        </tr>
+                    }
+            </table>
+        </div>
+        <div class="col-7"></div>
+    </div>
+}

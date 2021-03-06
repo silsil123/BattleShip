@@ -1,0 +1,70 @@
+﻿@page
+@using Domain.Enums
+@model NewGameModel
+@{
+    ViewData["Title"] = "Start a new game!";
+}
+<h1>@ViewData["Title"]</h1>
+
+<form method="post">
+    <div class="mb-3">
+        <label class="form-label">Game name</label>
+        <input asp-for="GameName" class="form-control" minlength="1" maxlength="24" id="firstUserName">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">First player's name</label>
+        <input asp-for="FirstPlayer" class="form-control" minlength="1" maxlength="24" id="firstUserName">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Second player's name</label>
+        <input asp-for="SecondPLayer" class="form-control" minlength="1" maxlength="24" id="secondUserName">
+    </div>
+    <div class="form-row">
+        <div class="col-md-4 mb-3">
+            <label for="boardWidth">Board Width</label>
+            <select asp-for="BoardWidth" class="form-control" id="boardWidth">
+                @foreach (var size in Model.BoardSizeList)
+                {
+                    <option value="@size">@size</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="boardHeight">Board Height</label>
+            <select asp-for="BoardHeight" class="form-control" id="boardHeight">
+                @foreach (var size in Model.BoardSizeList)
+                {
+                    <option value="@size">@size</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">Ship placement rules</label>
+        </div>
+        <select asp-for="EShipsCanTouch" class="custom-select" id="inputGroupSelect01">
+            <option selected value="@EShipsCanTouch.No">Ships can't touch each other</option>
+            <option value="@EShipsCanTouch.Corner">Ships can only touch by corners</option>
+            <option value="@EShipsCanTouch.Yes">Ships can touch each other</option>
+        </select>
+    </div>
+    <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="inputGroupSelect02">Ship placement</label>
+            </div>
+            <select asp-for="ShipPlacement" class="custom-select" id="inputGroupSelect02">
+                <option selected value="0">Players place their ships</option>
+                <option value="1">Ship locations are randomly generated.</option>
+            </select>
+        </div>
+    <div class="form-group">
+        <div class="custom-control form-control-lg custom-checkbox">
+            <input asp-for="ENextMoveAfterHit" type="checkbox" class="custom-control-input" id="customControlAutosizing" selected>
+            <label class="custom-control-label" for="customControlAutosizing">Same player can move again after hit</label>
+        </div>
+    </div>
+    <div class="mb-5">
+        <button type="submit" class="btn btn-primary btn-lg">Start Game</button>
+    </div>
+</form>
