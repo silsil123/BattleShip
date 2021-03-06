@@ -9,15 +9,15 @@ The game board each player gets has two grids: an upper and lower grid. The lowe
 When creating a new game, the players can choose their name, board size and set the rules of the game. After that, both players can choose to either place their ships manually or generate the ship locations randomly. Then the game starts where players take turns to strike their opponents fleets. Whoever destroys all the ships on their opponents fleet first, wins the game.
 
 ## Screenshots
-###Home view
+### Home view
 ![HomeScreen](/screenshots/HomeScreen.png)
 
-###Games view
+### Games view
 ![HomeScreen](/screenshots/Games.png)
 
-###New game view
+### New game view
 ![HomeScreen](/screenshots/NewGame.png)
 
-###In game view
+### In game view
 ![HomeScreen](/screenshots/InGame.png)
 
